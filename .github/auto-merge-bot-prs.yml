@@ -1,0 +1,30 @@
+name: Auto-merge Pre-commit and Dependabot PRs
+
+on:
+  schedule:
+    # runs daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # allows manual triggering
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install PyGithub requests
+
+      - name: Auto-merge bot PRs
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_USERNAME: O957
+        run: python3 scripts/auto_merge_bot_prs.py
