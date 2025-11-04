@@ -1,4 +1,4 @@
-name: Auto-merge Pre-commit and Dependabot PRs
+name: "Auto-merge Pre-commit and Dependabot PRs"
 
 on:
   schedule:
@@ -10,20 +10,20 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: "Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: "Setup Python"
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: "Install Dependencies"
         run: |
           python3 -m pip install --upgrade pip
           pip install PyGithub requests
 
-      - name: Auto-merge bot PRs
+      - name: "Auto-Merge Bot PRs"
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           GITHUB_USERNAME: O957
