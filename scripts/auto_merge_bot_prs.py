@@ -34,7 +34,12 @@ def should_auto_merge(pr):
     """
     # check if PR is from pre-commit.ci or dependabot
     author = pr.user.login.lower()
-    if author not in ["pre-commit-ci[bot]", "dependabot[bot]"]:
+    if author not in [
+        "pre-commit-ci[bot]",
+        "dependabot[bot]",
+        "dependabot",
+        "dependabot-preview[bot]",
+    ]:
         return False, f"Author {author} is not a bot we auto-merge."
 
     # check if PR is mergeable (no conflicts)
