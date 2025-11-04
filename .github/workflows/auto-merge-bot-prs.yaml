@@ -2,8 +2,8 @@ name: "Auto-merge Pre-commit and Dependabot PRs"
 
 on:
   schedule:
-    # runs daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    # runs weekly on Mondays at 11:59 PM EST (Tuesday 4:59 AM UTC)
+    - cron: '59 4 * * 2'
   workflow_dispatch:  # allows manual triggering
 
 jobs:

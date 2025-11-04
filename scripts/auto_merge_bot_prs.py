@@ -26,10 +26,10 @@ def should_auto_merge(pr):
 
     Returns
     -------
-    tuple[bool, str]
-        Whether the PR should be auto-merged
-        (should_merge) and reason for the decision
-        (reason).
+    should_merge : bool
+        Whether the PR should be auto-merged.
+    reason : str
+        Reason for the decision.
 
     """
     # check if PR is from pre-commit.ci or dependabot
@@ -44,7 +44,7 @@ def should_auto_merge(pr):
 
     # check if PR is mergeable (no conflicts)
     if not pr.mergeable:
-        return False, "PR has merge conflicts"
+        return False, "PR has merge conflicts."
 
     # check if all status checks pass
     commit = pr.get_commits().reversed[0]
@@ -71,8 +71,8 @@ def auto_merge_repo_prs(repo):
 
     Returns
     -------
-    list
-        List of merge results (results).
+    list[dict]
+        List of merge results containing repo, PR number, status, and message.
     """
     results = []
     try:
@@ -122,7 +122,7 @@ def auto_merge_repo_prs(repo):
                 print(f"Skipped {repo.full_name} PR #{pr.number}: {reason}")
 
     except GithubException as e:
-        print(f"Error accessing {repo.full_name}: {str(e)}")
+        print(f"Error accessing {repo.full_name}: {str(e)}.")
 
     return results
 
@@ -134,12 +134,12 @@ def load_repositories_config(config_path="config/repositories.json"):
     Parameters
     ----------
     config_path : str
-        Path to the configuration file
+        Path to the configuration file.
 
     Returns
     -------
-    repositories : list
-        List of repository names
+    list[str]
+        List of repository names.
     """
     config_file = Path(config_path)
 
@@ -147,7 +147,7 @@ def load_repositories_config(config_path="config/repositories.json"):
         print(f"Warning: Config file {config_path} not found.")
         print(
             "Please create a repositories.json file in the config folder "
-            "file with the list of repositorie to target."
+            "with the list of repositories to target."
         )
         return []
 
@@ -156,7 +156,7 @@ def load_repositories_config(config_path="config/repositories.json"):
             config = json.load(f)
             return config.get("repositories", [])
     except json.JSONDecodeError as e:
-        print(f"Error parsing {config_path}: {e}")
+        print(f"Error parsing {config_path}: {e}.")
         return []
 
 
@@ -166,14 +166,14 @@ def main():
 
     Returns
     -------
-    exit_code : int
-        Exit code (0 for success, 1 for error)
+    int
+        Exit code (0 for success, 1 for error).
     """
     token = os.environ.get("GITHUB_TOKEN")
     username = os.environ.get("GITHUB_USERNAME")
 
     if not token:
-        print("Error: GITHUB_TOKEN not set")
+        print("Error: GITHUB_TOKEN not set.")
         return 1
 
     repo_names = load_repositories_config()
