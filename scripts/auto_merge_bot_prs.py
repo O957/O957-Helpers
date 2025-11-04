@@ -46,16 +46,45 @@ def should_auto_merge(pr):
     if not pr.mergeable:
         return False, "PR has merge conflicts."
 
-    # check if all status checks pass
+    # check if all status checks and check runs pass
     commit = pr.get_commits().reversed[0]
-    combined_status = commit.get_combined_status()
 
-    if combined_status.state != "success":
-        # check if there are any statuses at all
-        if combined_status.total_count == 0:
-            # no checks configured, allow merge
-            return True, "No CI checks configured, proceeding."
-        return False, f"CI checks status: {combined_status.state}."
+    # check status API (older CI systems)
+    combined_status = commit.get_combined_status()
+    has_statuses = combined_status.total_count > 0
+
+    # check runs API (GitHub Actions)
+    check_runs = commit.get_check_runs()
+    has_check_runs = check_runs.totalCount > 0
+
+    # if no checks at all, allow merge
+    if not has_statuses and not has_check_runs:
+        return True, "No CI checks configured, proceeding."
+
+    # check status API results
+    if has_statuses and combined_status.state != "success":
+        return False, f"Status checks: {combined_status.state}."
+
+    # check runs API results
+    if has_check_runs:
+        for check_run in check_runs:
+            # only consider required checks
+            if check_run.status != "completed":
+                return (
+                    False,
+                    (
+                        f"Check run '{check_run.name}' not completed: "
+                        f"{check_run.status}."
+                    ),
+                )
+            if check_run.conclusion not in ["success", "neutral", "skipped"]:
+                return (
+                    False,
+                    (
+                        f"Check run '{check_run.name}' failed: "
+                        f"{check_run.conclusion}."
+                    ),
+                )
 
     return True, "All checks passed."
 
